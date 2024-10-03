@@ -16,21 +16,12 @@ function resetOutput() {
 
 function saveDiscord() {
     echo "Saving to discord";
-    MESSAGE=$( date +"%d/%m/%y %H:%M" );
-
-    file_url=$( curl \
-    -F "payload_json={\"username\": \"$BOT_NAME\", \"content\": \"$MESSAGE\"}" \
-    -F "file1=@$ARCHIVE" \
-    $WEBHOOK | grep -Po '"url":.*?[^\\]",' | cut -d '"' -f 4 );
+    local MESSAGE=$( date +"%d/%m/%y %H:%M" );
+    local curled=$( curl -F "payload_json={\"username\": \"$BOT_NAME\", \"content\": \"$MESSAGE\"}" -F "file1=@$ARCHIVE" $WEBHOOK );
+    echo $curled > curl.json;
+    local file_url=$( echo $curled | grep -Po '"url":.*?[^\\]",' | cut -d '"' -f 4 );
     echo $( date +%s )";""$file_url" >> $FILE_HISTORY;
 }
-
-# function imagify() {
-#     nb=$( cat $ARCHIVE | wc -c );
-#     pixels=$( expr $(expr $nb / 6 ) + 1 );
-#     echo $nb $pixels;
-#     cols=$( awk "BEGIN { print sqrt($pixels) }");
-# }
 
 function archive() {
     resetArchive;
@@ -57,6 +48,29 @@ function extract() {
     bash $EXTRACTER $ARCHIVE $OUTPUT;
 }
 
+function download() {
+    local currentTimestamp;
+    local lastTimeStamp;
+    local lastFile;
+    echo Downloading closest anterior archive to $( date -d "@$DATE" +"%Y-%m-%d %H:%M" );
+    while read -r line; do
+        currentTimestamp=$( echo $line | cut -d ";" -f 1 );
+        if [ $currentTimestamp -le "$DATE" ]; then
+            lastTimeStamp=$currentTimestamp;
+            lastFile=$( echo $line | cut -d ";" -f 2 );
+        fi
+    done < $FILE_HISTORY;
+
+    if [ -n "$lastFile" ]; then
+        echo "Extracting archive from" $( date -d "@$lastTimeStamp" +"%Y-%m-%d %H:%M" );
+        curl $lastFile > $ARCHIVE_DL;
+        ARCHIVE=$ARCHIVE_DL;
+        extract;
+    else
+        echo "No record found."
+    fi
+}
+
 SCRIPT_DIR=$( dirname $(readlink -f $0 ) )
 ARCHIVER=$SCRIPT_DIR/archiver.sh
 EXTRACTER=$SCRIPT_DIR/extracter.sh
@@ -66,29 +80,34 @@ ARCHIVE=$SCRIPT_DIR/archive
 ARCHIVE_OLD=$ARCHIVE"_OLD"
 OUTPUT=$SCRIPT_DIR/output
 FILE_HISTORY=$SCRIPT_DIR/file_history
+ARCHIVE_DL=$ARCHIVE"_DL"
 
 WEBHOOK="https://discord.com/api/webhooks/1288862525538177046/n7nL2-P8lf0YEqpGgU6Hs8b1mTpz0oEPlelZqoS0tookcHSoDj9jxVDxZcg4_vtb8DxP"
 BOT_NAME="Super Archiver"
 
-show_help() {
+function show_help() {
     echo "Usage: $0 [options]"
     echo ""
     echo "Options:"
-    echo "  -a, --archive      Archive the specified files in ./.tocompress"
-echo "  -e, --extract          Extract files from  ./archive"
-echo "  --help                 Display this help message."
+    echo "  -a, --archive           Archive the specified files in ./.tocompress"
+    echo "  -d, --download          Downloads the last uploaded archive, or the last from the specified date with format \"yyyy-mm-dd hh:mm\""
+    echo "  -e, --extract           Extract files from  ./archive"
+    echo "  --help                  Display this help message."
 }
 
 while [ $# -gt 0 ]; do
     case $1 in
         -a | --archive )
             archive
-            shift
             exit 0
             ;;
         -e | --extract )
             extract
-            shift
+            exit 0
+            ;;
+        -d | --download )
+            DATE=$( [ -n "$2" ] && date -d "$2" +"%s" || date +"%s" );
+            download
             exit 0
             ;;
         --help )
