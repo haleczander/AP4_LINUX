@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer pour le service de lancement automatique du script d'archivage
+
+[Timer]
+OnCalendar=*:0/1
+Unit=mon_super_archiver.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

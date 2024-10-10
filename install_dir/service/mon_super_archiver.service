@@ -1,0 +1,6 @@
+[Unit]
+Description=Service de lancement automatique du script d'archivage
+
+[Service]
+ExecStart=/bin/bash /usr/bin/archiver/main.sh
+User=$USER
