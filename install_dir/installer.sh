@@ -14,10 +14,14 @@ fi
 sudo mkdir $INSTALL_DIR
 
 sudo cp $SCRIPT_DIR/sources/* $INSTALL_DIR
+sudo chmod u+x $INSTALL_DIR
 sudo touch $INSTALL_DIR/.tocompress
 
 # Copie des fichiers de service
 sudo cp $SCRIPT_DIR/service/* $SERVICES_DIR
+
+# Installation de curl
+sudo apt-get install curl
 
 # Démarrage du service
 if pidof systemd > /dev/null; then
