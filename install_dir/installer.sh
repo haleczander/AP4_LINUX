@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 PROGRAM_NAME=mon_super_archiver
 
@@ -14,7 +14,7 @@ fi
 sudo mkdir $INSTALL_DIR
 
 sudo cp $SCRIPT_DIR/sources/* $INSTALL_DIR
-sudo chmod u+x $INSTALL_DIR
+sudo chmod u+x $INSTALL_DIR/*.sh
 sudo touch $INSTALL_DIR/.tocompress
 
 # Copie des fichiers de service

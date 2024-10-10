@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 function resetArchive() {
     if [ -f $ARCHIVE ];then

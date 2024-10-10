@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 POUBELLE="/dev/null";
 TAILLE_NOM_ENC=4;

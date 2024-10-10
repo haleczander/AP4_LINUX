@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 POUBELLE="/dev/null";
 TAILLE_NOM_ENC=4;
@@ -25,5 +25,3 @@ while read line; do
 
 done < $ARCHIVE;
 IFS=$BACKUP_IFS;
-
-# remettre if sr espace
