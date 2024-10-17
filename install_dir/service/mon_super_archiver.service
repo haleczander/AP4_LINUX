@@ -1,6 +1,7 @@
 [Unit]
-Description=Service de lancement automatique du script d'archivage
+Description=Service de lancement du script d'archivage
 
 [Service]
-ExecStart=/bin/bash /usr/bin/archiver/main.sh
-User=$USER
+Type=simple
+ExecStart=/bin/bash /bin/mon_super_archiver/main.sh
+
