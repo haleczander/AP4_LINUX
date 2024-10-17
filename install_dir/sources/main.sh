@@ -2,7 +2,10 @@
 
 function resetArchive() {
     if [ -f $ARCHIVE ];then
-    mv $ARCHIVE $ARCHIVE_OLD;
+    	mv $ARCHIVE $ARCHIVE_OLD;
+    fi
+    if [ ! -d $ARCHIVE_FOLDER ];then
+        mkdir -p $ARCHIVE_FOLDER;
     fi
     touch $ARCHIVE;
 }
@@ -97,15 +100,17 @@ function download() {
     fi
 }
 
+PROGRAM_NAME=mon_super_archiver
+ARCHIVE_FOLDER=~/$PROGRAM_NAME
 SCRIPT_DIR=$( dirname $(readlink -f $0 ) )
 ARCHIVER=$SCRIPT_DIR/archiver.sh
 EXTRACTER=$SCRIPT_DIR/extracter.sh
 DISCORD=$SCRIPT_DIR/discord.sh
 TO_COMPRESS_FILE=$SCRIPT_DIR/.tocompress
-ARCHIVE=$SCRIPT_DIR/archive
+ARCHIVE=$ARCHIVE_FOLDER/archive
 ARCHIVE_OLD=$ARCHIVE"_OLD"
 OUTPUT=$SCRIPT_DIR/output
-FILE_HISTORY=$SCRIPT_DIR/file_history
+FILE_HISTORY=~/.archive_history
 ARCHIVE_DL=$ARCHIVE"_DL"
 API_KEY_FILE=$SCRIPT_DIR/file.io.key
 API_KEY=$( cat $API_KEY_FILE )

@@ -31,8 +31,6 @@ sudo apt-get install curl
 if pidof systemd > /dev/null; then
     # Démarrage du service
     sudo systemctl start $PROGRAM_NAME.service $PROGRAM_NAME.timer
-    cat $PROGRAM_NAME.service 
-    cat $PROGRAM_NAME.timer
 else
     echo "Systemd n'est pas disponible. Le service ne peut pas être démarré."
 fi
