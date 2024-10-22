@@ -1,3 +1,8 @@
+# !/bin/bash
+
+source $( dirname $(readlink -f $0 ) )/config.sh
+
+
 
 function imagify() {
     nb=$( cat archiver/archive | wc -c );

@@ -1,8 +1,6 @@
 #!/bin/bash
 
-POUBELLE="/dev/null";
-TAILLE_NOM_ENC=4;
-TAILLE_FICHIER_ENC=16;
+source $( dirname $(readlink -f $0 ) )/config.sh
 
 DIR=$( echo $1 | tr -d '\r' );
 ARCHIVE=$2;
