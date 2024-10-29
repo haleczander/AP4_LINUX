@@ -8,6 +8,10 @@ INSTALL_DIR=/bin/$PROGRAM_NAME
 USR_BIN=/usr$INSTALL_DIR
 SERVICES_DIR=/etc/systemd/system
 
+# Installation des dépendances
+sudo apt-get install -y curl dos2unix
+sudo dos2unix **
+
 # Copie des scripts
 if [ -d "$INSTALL_DIR" ]; then
     sudo rm -rf $INSTALL_DIR
@@ -25,15 +29,19 @@ ls -la $INSTALL_DIR
 sudo cp $SCRIPT_DIR/service/* $SERVICES_DIR
 
 
-# Installation de curl
-sudo apt-get install curl
-
 # Démarrage du service
 if pidof systemd > /dev/null; then
-    # Démarrage du service
+    # Relance des services
+    sudo systemctl daemon-reload
+    # Ajout de notre service au démarrage
+    sudo systemctl enable $PROGRAM_NAME.service
+    # Démarrage
     sudo systemctl start $PROGRAM_NAME.service $PROGRAM_NAME.timer
 else
-    echo "Systemd n'est pas disponible. Le service ne peut pas être démarré."
+    # Démarrage du service avec init.d
+    sudo cp $SCRIPT_DIR/service/$PROGRAM_NAME /etc/init.d/
+    sudo update-rc.d $PROGRAM_NAME defaults
+    sudo /etc/init.d/$PROGRAM_NAME start
 fi
 
 
