@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function resetArchive() {
-    if [ ! -d $OUTPUT ]; then
+    if [ ! -d $USER_DIR ]; then
         mkdir $USER_DIR;
     fi
 
