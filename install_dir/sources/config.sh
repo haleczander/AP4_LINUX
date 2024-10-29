@@ -1,6 +1,7 @@
 PROGRAM_NAME=mon_super_archiver
 SCRIPT_DIR=$( dirname $(readlink -f $0 ) )
 USER_DIR=~/$PROGRAM_NAME
+USER_BIN=/usr/bin/$PROGRAM_NAME
 
 ARCHIVER=$SCRIPT_DIR/archiver.sh
 EXTRACTER=$SCRIPT_DIR/extracter.sh
@@ -8,7 +9,7 @@ UPLOADER=$SCRIPT_DIR/uploader.sh
 DOWNLOADER=$SCRIPT_DIR/downloader.sh
 DISCORD=$SCRIPT_DIR/discord.sh
 
-TO_COMPRESS_FILE=$USER_DIR/.tocompress
+TO_COMPRESS_FILE=$USER_BIN/.tocompress
 ARCHIVE=$USER_DIR/archive
 ARCHIVE_OLD=$ARCHIVE"_OLD"
 OUTPUT=$USER_DIR/output
