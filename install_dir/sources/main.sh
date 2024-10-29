@@ -1,6 +1,10 @@
 #!/bin/bash
 
 function resetArchive() {
+    if [ ! -d $OUTPUT ]; then
+        mkdir $USER_DIR;
+    fi
+
     if [ -f $ARCHIVE ];then
     mv $ARCHIVE $ARCHIVE_OLD;
     fi
