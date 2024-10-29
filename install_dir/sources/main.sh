@@ -2,10 +2,7 @@
 
 function resetArchive() {
     if [ -f $ARCHIVE ];then
-    	mv $ARCHIVE $ARCHIVE_OLD;
-    fi
-    if [ ! -d $ARCHIVE_FOLDER ];then
-        mkdir -p $ARCHIVE_FOLDER;
+    mv $ARCHIVE $ARCHIVE_OLD;
     fi
     touch $ARCHIVE;
 }
@@ -15,16 +12,6 @@ function resetOutput() {
         rm -rf $OUTPUT;
     fi
     mkdir -p $OUTPUT;
-}
-
-function saveFileIo() {
-    echo "Saving to File.IO";
-    
-    local curled=$( curl -X POST "https://file.io/" \
-        -H "Authorization: Bearer $API_KEY" \
-        -F "file=@$ARCHIVE" );
-    local file_url=$( echo $curled | grep -Po '"link":.*?[^\\]",' | cut -d '"' -f 4 );
-    echo $( date +%s )";""$file_url" >> $FILE_HISTORY;    
 }
 
 function reuploadFileIo() {
@@ -55,15 +42,11 @@ function archive() {
         bash $ARCHIVER $line $ARCHIVE;
     done < $TO_COMPRESS_FILE;
 
-    if [ -f $ARCHIVE_OLD ];then
-        diffs=$( diff -U 0 $ARCHIVE $ARCHIVE_OLD | grep ^@ | wc -l );
-        if [ "$diffs" -gt 0 ]; then
-            saveFileIo;
-            # saveDiscord;
+    if [ -f $ARCHIVE_OLD ] && [ "$(diff -U 0 $ARCHIVE $ARCHIVE_OLD | grep ^@ | wc -l)" -eq 0 ]; then
+        if $UPLOAD_FLAG; then
+            echo "Aucune différence avec la dernière archive, annulation de l'upload";
         fi
-    else
-        saveFileIo;
-        # saveDiscord;
+        UPLOAD_FLAG=false;
     fi
 
 }
@@ -87,36 +70,22 @@ function findArchiveLink() {
     done < $FILE_HISTORY;
 }
 
+function upload() {
+    bash $UPLOADER $ARCHIVE $FILE_HISTORY;
+}
+
+
 function download() {
     findArchiveLink;
     if [ -n "$ARCHIVE_LINK" ]; then
         echo "Extracting archive from" $( date -d "@$ARCHIVE_TIMESTAMP" +"%Y-%m-%d %H:%M" );
-        curl $lastFile > $ARCHIVE_DL;
+        bash $DOWNLOADER $ARCHIVE_DL $ARCHIVE_LINK $FILE_HISTORY;
         ARCHIVE=$ARCHIVE_DL;
         extract;
-        reuploadFileIo;
     else
         echo "No record found."
     fi
 }
-
-PROGRAM_NAME=mon_super_archiver
-ARCHIVE_FOLDER=~/$PROGRAM_NAME
-SCRIPT_DIR=$( dirname $(readlink -f $0 ) )
-ARCHIVER=$SCRIPT_DIR/archiver.sh
-EXTRACTER=$SCRIPT_DIR/extracter.sh
-DISCORD=$SCRIPT_DIR/discord.sh
-TO_COMPRESS_FILE=$SCRIPT_DIR/.tocompress
-ARCHIVE=$ARCHIVE_FOLDER/archive
-ARCHIVE_OLD=$ARCHIVE"_OLD"
-OUTPUT=$SCRIPT_DIR/output
-FILE_HISTORY=~/.archive_history
-ARCHIVE_DL=$ARCHIVE"_DL"
-API_KEY_FILE=$SCRIPT_DIR/file.io.key
-API_KEY=$( cat $API_KEY_FILE )
-
-WEBHOOK="https://discord.com/api/webhooks/1288862525538177046/n7nL2-P8lf0YEqpGgU6Hs8b1mTpz0oEPlelZqoS0tookcHSoDj9jxVDxZcg4_vtb8DxP"
-BOT_NAME="Super Archiver"
 
 function show_help() {
     echo "Usage: $0 [options]"
@@ -125,14 +94,22 @@ function show_help() {
     echo "  -a, --archive           Archive the specified files in ./.tocompress"
     echo "  -d, --download          Downloads the last uploaded archive, or the last from the specified date with format \"yyyy-mm-dd hh:mm\""
     echo "  -e, --extract           Extract files from  ./archive"
-    echo "  --help                  Display this help message."
+    echo "  -h, --help              Display this help message."
+    echo "  -u, --upload            Upload the archived files after archiving"
 }
+
+source $( dirname $(readlink -f $0 ) )/config.sh
+
+ARCHIVE_FLAG=false
+UPLOAD_FLAG=false
 
 while [ $# -gt 0 ]; do
     case $1 in
         -a | --archive )
-            archive
-            exit 0
+            ARCHIVE_FLAG=true
+            ;;
+        -u | --upload )
+            UPLOAD_FLAG=true
             ;;
         -e | --extract )
             extract
@@ -143,7 +120,7 @@ while [ $# -gt 0 ]; do
             download
             exit 0
             ;;
-        --help )
+        -h | --help )
             show_help
             exit 0
             ;;
@@ -152,6 +129,12 @@ while [ $# -gt 0 ]; do
             show_help
             exit 1
     esac
+    shift
 done
 
-archive
+if $ARCHIVE_FLAG || [ $# -eq 0 ]; then
+    archive
+    if $UPLOAD_FLAG; then
+        upload
+    fi
+fi

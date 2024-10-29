@@ -94,7 +94,8 @@ function show_help() {
     echo "  -a, --archive           Archive the specified files in ./.tocompress"
     echo "  -d, --download          Downloads the last uploaded archive, or the last from the specified date with format \"yyyy-mm-dd hh:mm\""
     echo "  -e, --extract           Extract files from  ./archive"
-    echo "  -h, --help                  Display this help message."
+    echo "  -h, --help              Display this help message."
+    echo "  -u, --upload            Upload the archived files after archiving"
 }
 
 source $( dirname $(readlink -f $0 ) )/config.sh

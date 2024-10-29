@@ -3,5 +3,5 @@ Description=Service de lancement du script d'archivage
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /bin/mon_super_archiver/main.sh
+ExecStart=/bin/bash /bin/mon_super_archiver/main.sh --upload
 
