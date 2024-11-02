@@ -5,7 +5,6 @@ source $( dirname $(readlink -f $0 ) )/config.sh
 TO_UPLOAD=$1
 
 function discordUpload() {
-    echo "Uploading to discord";
     local MESSAGE=$( date +"%d/%m/%y %H:%M" );
     local curled=$( curl -F "payload_json={\"username\": \"$BOT_NAME\", \"content\": \"$MESSAGE\"}" -F "file1=@$TO_UPLOAD" $WEBHOOK );
     local file_url=$( echo $curled | grep -Po '"url":.*?[^\\]",' | cut -d '"' -f 4 );

@@ -11,6 +11,7 @@ function post() {
         -H "Authorization: Bearer $API_KEY" \
         -F "file=@$FILE" );
     FILE_URL=$( echo $CURL | grep -Po '"link":.*?[^\\]",' | cut -d '"' -f 4 );
+    echo "Uploaded to File.IO: $FILE_URL";
 }
 
 function upload() {

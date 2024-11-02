@@ -1,0 +1,26 @@
+Archiving files
+Resetting archive
+Resetting archive done
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources to /home/alex/mon_super_archiver/archive
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/archiver.sh
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/config.sh
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/discord.sh
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/downloader.sh
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/extracter.sh
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/file.io.key
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/main.sh
+Archiving /mnt/c/Users/alex/OneDrive/Bureau/AP4_LINUX/install_dir/sources/uploader.sh
+Archiving done
+Uploading archive
+Uploading to File.IO
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 14884  100   477  100 14407   1096  33119 --:--:-- --:--:-- --:--:-- 34137100 14884  100   477  100 14407   1057  31944 --:--:-- --:--:-- --:--:-- 32929
+Uploaded to File.IO: https://file.io/0KOe8pg4HBYM
+Uploading done
+Uploading to discord
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 15557    0   989  100 14568   2542  37449 --:--:-- --:--:-- --:--:-- 39992
+Uploaded to discord: https://cdn.discordapp.com/attachments/1288862430818074668/1302296748072370278/archive?ex=672799dc&is=6726485c&hm=bc6ec4dd6c37c3abaaf143ad86c9b67e388bd6a801833528c27b8fc080bc7ed7&
+Uploading to discord done

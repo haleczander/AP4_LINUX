@@ -1,0 +1,7 @@
+Installation de mon_super_archiver
+Copie des scripts vers /bin/mon_super_archiver
+Configuration des droits
+Installation des dépendances
+Configuration du service
+Systemd n'est pas disponible. Le service ne peut pas être démarré.
+Installation terminée
