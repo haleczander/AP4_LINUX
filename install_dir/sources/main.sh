@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function resetArchive() {
+    echo "Resetting archive";
     if [ ! -d $USER_DIR ]; then
         mkdir $USER_DIR;
     fi
@@ -9,57 +10,43 @@ function resetArchive() {
     mv $ARCHIVE $ARCHIVE_OLD;
     fi
     touch $ARCHIVE;
+    echo "Resetting archive done";
 }
 
 function resetOutput() {
+    echo "Resetting output";
     if [ -d $OUTPUT ];then
         rm -rf $OUTPUT;
     fi
     mkdir -p $OUTPUT;
-}
-
-function reuploadFileIo() {
-    echo "Reuploading to File.IO";
-
-    local curled=$( curl -X POST "https://file.io/" \
-        -H "Authorization: Bearer $API_KEY" \
-        -F "file=@$ARCHIVE" );
-    local file_url=$( echo $curled | grep -Po '"link":.*?[^\\]",' | cut -d '"' -f 4 );
-
-    sed -i "s|$ARCHIVE_LINK|$file_url|g" $FILE_HISTORY;
-}
-
-function saveDiscord() {
-    echo "Saving to discord";
-    local MESSAGE=$( date +"%d/%m/%y %H:%M" );
-    local curled=$( curl -F "payload_json={\"username\": \"$BOT_NAME\", \"content\": \"$MESSAGE\"}" -F "file1=@$ARCHIVE" $WEBHOOK );
-    echo $curled > curl.json;
-    local file_url=$( echo $curled | grep -Po '"url":.*?[^\\]",' | cut -d '"' -f 4 );
-    echo $( date +%s )";""$file_url" >> $FILE_HISTORY;
+    echo "Resetting output done";
 }
 
 function archive() {
+    echo "Archiving files";
     resetArchive;
 
     while IFS= read -r line; do
-        echo "Archiving " $line;
         bash $ARCHIVER $line $ARCHIVE;
     done < $TO_COMPRESS_FILE;
 
-    if [ -f $ARCHIVE_OLD ] && [ "$(diff -U 0 $ARCHIVE $ARCHIVE_OLD | grep ^@ | wc -l)" -eq 0 ]; then
+    if [ ! $FORCE_FLAG ] && [ -f $ARCHIVE_OLD ] && [ "$(diff -U 0 $ARCHIVE $ARCHIVE_OLD | grep ^@ | wc -l)" -eq 0 ]; then
         if $UPLOAD_FLAG; then
             echo "Aucune différence avec la dernière archive, annulation de l'upload";
         fi
         UPLOAD_FLAG=false;
     fi
+    echo "Archiving done";
 
 }
 
 
 function extract() {
+    echo "Extracting files";
     resetOutput;
     echo "Extracting " $ARCHIVE;
     bash $EXTRACTER $ARCHIVE $OUTPUT;
+    echo "Extracting done";
 }
 
 function findArchiveLink() {
@@ -75,11 +62,20 @@ function findArchiveLink() {
 }
 
 function upload() {
+    echo "Uploading archive";
     bash $UPLOADER $ARCHIVE $FILE_HISTORY;
+    echo "Uploading done";
+}
+
+function discordUpload() {
+    echo "Uploading to discord";
+    bash $DISCORD $ARCHIVE;
+    echo "Uploading to discord done";
 }
 
 
 function download() {
+    echo "Downloading archive";
     findArchiveLink;
     if [ -n "$ARCHIVE_LINK" ]; then
         echo "Extracting archive from" $( date -d "@$ARCHIVE_TIMESTAMP" +"%Y-%m-%d %H:%M" );
@@ -89,6 +85,7 @@ function download() {
     else
         echo "No record found."
     fi
+    echo "Downloading done";
 }
 
 function show_help() {
@@ -100,12 +97,16 @@ function show_help() {
     echo "  -e, --extract           Extract files from  ./archive"
     echo "  -h, --help              Display this help message."
     echo "  -u, --upload            Upload the archived files after archiving"
+    echo "  -s, --discord           Upload the archived files to discord after archiving"
+    echo "  -f, --force             Force the upload even if the archive is the same as the last one"
 }
 
 source $( dirname $(readlink -f $0 ) )/config.sh
 
 ARCHIVE_FLAG=false
 UPLOAD_FLAG=false
+DISCORD_FLAG=false
+FORCE_FLAG=false
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -124,6 +125,12 @@ while [ $# -gt 0 ]; do
             download
             exit 0
             ;;
+        -s | --discord )
+            DISCORD_FLAG=true
+            ;;
+        -f | --force )
+            FORCE_FLAG=true
+            ;;
         -h | --help )
             show_help
             exit 0
@@ -141,4 +148,8 @@ if $ARCHIVE_FLAG || [ $# -eq 0 ]; then
     if $UPLOAD_FLAG; then
         upload
     fi
+    if $DISCORD_FLAG; then
+        discordUpload
+    fi
+
 fi
